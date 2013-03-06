@@ -18,7 +18,7 @@
    Conjecture is compatible with any ~clojure.test~ based tests you may have.
    You simply swap ~name.stadig.conjecture~ in for ~clojure.test~.
 
-   You can add the ~lein-conjecture~ plugin to your project.clj, if that's your
+   You can add the lein-conjecture plugin to your project.clj, if that's your
    style:
    : :plugins [[name.stadig/lein-conjecture "0.1.0"]]
 
@@ -34,6 +34,8 @@
    - Any tools that depend directly on ~clojure.test~ will not be compatible,
      since the namespace is different for conjecture (for example,
      clojure-mode).
+** Differences from clojure.test
+   - Support for idempotent and singleton fixtures.
 ** License
    : Copyright © Rich Hickey and Paul Stadig. All rights reserved.
    :
