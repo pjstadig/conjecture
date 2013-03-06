@@ -1,8 +1,39 @@
 #+STARTUP: hidestars showall
 * conjecture
-  A Clojure testing library forked from clojure.test.
+  A Clojure testing library forked from ~clojure.test~.
 ** Usage
-   Same as clojure.test, except you pull in name.stadig.conjecture.
+   Same as ~clojure.test~, except you pull in ~name.stadig.conjecture~.
+
+   For example, you would add the following dependency to your project.clj:
+   : :dependencies [[name.stadig/conjecture "0.1.0"]]
+
+   Use ~name.stadig.conjecture~ in your tests:
+   : (ns foo.bar.test
+   :   (:use [name.stadig.conjecture]))
+   :
+   : (deftest test-widget
+   :   (is (= foo bar))
+   :   ...)
+
+   Conjecture is compatible with any ~clojure.test~ based tests you may have.
+   You simply swap ~name.stadig.conjecture~ in for ~clojure.test~.
+
+   You can add the ~lein-conjecture~ plugin to your project.clj, if that's your
+   style:
+   : :plugins [[name.stadig/lein-conjecture "0.1.0"]]
+
+   With this plugin you can run your tests with ~lein conjecture~, or if your
+   muscle memory is too overwhelming, you can add an alias to your project.clj:
+   : :aliases {"test" "conjecture"}
+
+   Now you can run your tests with ~lein test~.
+
+   You can see examples of all of this by looking at the project.clj for this
+   project.
+** Known Issues
+   - Any tools that depend directly on ~clojure.test~ will not be compatible,
+     since the namespace is different for conjecture (for example,
+     clojure-mode).
 ** License
    : Copyright © Rich Hickey and Paul Stadig. All rights reserved.
    :
