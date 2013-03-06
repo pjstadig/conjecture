@@ -8,7 +8,7 @@
 ;;;; terms of this license.  You must not remove this notice, or any other, from
 ;;;; this software.
 
-;;; test_is/tap.clj: Extension to name.stadig.clojure.test for TAP output
+;;; test_is/tap.clj: Extension to name.stadig.conjecture for TAP output
 
 ;; by Stuart Sierra
 ;; March 31, 2009
@@ -19,7 +19,7 @@
 ;; DOCUMENTATION
 ;;
 
-(ns ^{:doc "name.stadig.clojure.test extensions for the Test Anything Protocol
+(ns ^{:doc "name.stadig.conjecture extensions for the Test Anything Protocol
   (TAP)
 
   TAP is a simple text-based syntax for reporting test results.  TAP
@@ -29,17 +29,17 @@
   http://search.cpan.org/~petdance/TAP-1.0.0/TAP.pm
 
   To use this library, wrap any calls to
-  name.stadig.clojure.test/run-tests in the with-tap-output macro,
+  name.stadig.conjecture/run-tests in the with-tap-output macro,
   like this:
 
-    (use 'name.stadig.clojure.test)
-    (use 'name.stadig.clojure.test.tap)
+    (use 'name.stadig.conjecture)
+    (use 'name.stadig.conjecture.tap)
 
     (with-tap-output
       (run-tests 'my.cool.library))"
       :author "Stuart Sierra"}
-  name.stadig.clojure.test.tap
-  (:require [name.stadig.clojure.test :as t]
+  name.stadig.conjecture.tap
+  (:require [name.stadig.conjecture :as t]
             [clojure.stacktrace :as stack]))
 
 (defn print-tap-plan

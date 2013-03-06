@@ -13,8 +13,8 @@
 ;; by Stuart Sierra
 ;; March 28, 2009
 
-(ns name.stadig.clojure.test.test-fixtures
-  (:use name.stadig.clojure.test))
+(ns name.stadig.test.conjecture.fixtures
+  (:use name.stadig.conjecture))
 
 (declare ^:dynamic *a* ^:dynamic *b* ^:dynamic *c* ^:dynamic *d*)
 

@@ -8,7 +8,7 @@
 ;;;; terms of this license.  You must not remove this notice, or any other, from
 ;;;; this software.
 
-;; test/junit.clj: Extension to name.stadig.clojure.test for JUnit-compatible
+;; test/junit.clj: Extension to name.stadig.conjecture for JUnit-compatible
 ;; XML output
 
 ;; by Jason Sankey
@@ -17,29 +17,29 @@
 ;; DOCUMENTATION
 ;;
 
-(ns ^{:doc "name.stadig.clojure.test extension for JUnit-compatible XML output.
+(ns ^{:doc "name.stadig.conjecture extension for JUnit-compatible XML output.
 
   JUnit (http://junit.org/) is the most popular unit-testing library
   for Java.  As such, tool support for JUnit output formats is
   common.  By producing compatible output from tests, this tool
   support can be exploited.
 
-  To use, wrap any calls to name.stadig.clojure.test/run-tests in the
+  To use, wrap any calls to name.stadig.conjecture/run-tests in the
   with-junit-output macro, like this:
 
-    (use 'name.stadig.clojure.test)
-    (use 'name.stadig.clojure.test.junit)
+    (use 'name.stadig.conjecture)
+    (use 'name.stadig.conjecture.junit)
 
     (with-junit-output
       (run-tests 'my.cool.library))
 
-  To write the output to a file, rebind name.stadig.clojure.test/*test-out* to
+  To write the output to a file, rebind name.stadig.conjecture/*test-out* to
   your own PrintWriter (perhaps opened using
   clojure.java.io/writer)."
       :author "Jason Sankey"}
-  name.stadig.clojure.test.junit
+  name.stadig.conjecture.junit
   (:require [clojure.stacktrace :as stack]
-            [name.stadig.clojure.test :as t]))
+            [name.stadig.conjecture :as t]))
 
 ;; copied from clojure.contrib.lazy-xml
 (def ^{:private true}

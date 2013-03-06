@@ -233,7 +233,7 @@
 
    For additional event types, see the examples in the code.
 "}
-  name.stadig.clojure.test
+  name.stadig.conjecture
   (:require [clojure.template :as temp]
             [clojure.stacktrace :as stack]))
 
