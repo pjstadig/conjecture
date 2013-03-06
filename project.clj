@@ -1,4 +1,4 @@
-(defproject name.stadig/clojure-test "0.1.0-SNAPSHOT"
+(defproject name.stadig/clojure-test "0.1.0"
   :description "clojure.test but not in clojure.jar"
   :url "http://github.com/pjstadig/clojure-test"
   :license {:name "Eclipse Public License"
