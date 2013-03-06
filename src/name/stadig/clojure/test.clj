@@ -782,3 +782,44 @@
   [summary]
   (and (zero? (:fail summary 0))
        (zero? (:error summary 0))))
+
+(defonce has-run? (atom #{}))
+
+(defn idempotent-fixture
+  "Takes a fixture and makes it into an idempotent fixture.  An idempotent
+  fixture can be nested many times, but will be run only once."
+  [fx]
+  (fn [f]
+    (let [run? (not (@has-run? fx))]
+      (try
+        (if run?
+          (do (swap! has-run? conj fx)
+              (fx f))
+          (f))
+        (finally
+         (when run?
+           (swap! has-run? disj fx)))))))
+
+(defn idempotent-generator
+  "Takes a fixture generator and makes it into a fixture generator that
+  generates idempotent fixtures."
+  [generator]
+  (fn [& args]
+    (idempotent-fixture (apply generator args))))
+
+(defonce singleton-has-run? (atom #{}))
+
+(defn singleton-fixture
+  "Takes a fixture and makes it into a singleton fixture.  A singleton fixture
+  is run only once per JVM process."
+  [fx]
+  (fn [f]
+    (let [run? (not (@singleton-has-run? fx))]
+      (try
+        (if run?
+          (do (swap! singleton-has-run? conj fx)
+              (fx f))
+          (f))))))
+
+(defn comp-fixtures [& fixtures]
+  (join-fixtures fixtures))

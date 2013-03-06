@@ -117,3 +117,44 @@
   (binding [original-report report
             report custom-report]
     (test-all-vars (find-ns 'name.stadig.clojure.test.test))))
+
+(deftest test-idempotent-fixture
+  (let [count (atom 0)
+        called? (atom false)
+        fx (fn [f] (swap! count inc) (f))
+        ifx (idempotent-fixture fx)]
+    ((comp-fixtures ifx ifx ifx) #(do (is (@has-run? fx) "Should pass")
+                                      (reset! called? true)))
+    (is (= 1 @count) "Should pass")
+    (is (not (@has-run? fx)) "Should pass")
+    (is @called? "Should pass")
+    (try
+      ((comp-fixtures ifx ifx ifx) #(throw (Exception.)))
+      (is false "Should fail")
+      (catch Exception _))
+    (is (not (@has-run? fx)) "Should pass")))
+
+(deftest test-idempotent-generator
+  (let [order (atom [])
+        gen (fn [msg] (fn [f] (swap! order conj msg) (f)))
+        gen (idempotent-generator gen)
+        called? (atom false)
+        ifx (gen "hello")
+        ifx2 (gen "goodbye")]
+    ((comp-fixtures ifx ifx ifx2) #(reset! called? true))
+    (is (= ["hello" "goodbye"] @order) "Should pass")
+    (is @called? "Should pass")))
+
+(def sfx-count (atom 0))
+(def fx (fn [f] (swap! sfx-count inc) (f)))
+(def sfx (singleton-fixture fx))
+
+(deftest test-singleton-fixture
+  (reset! sfx-count 0)
+  (swap! singleton-has-run? disj sfx)
+  (sfx #(constantly nil))
+  (is (= 1 @sfx-count) "Should pass")
+  (is (@singleton-has-run? fx) "Should pass")
+  (sfx #(constantly nil))
+  (is (= 1 @sfx-count) "Should pass")
+  (is (@singleton-has-run? fx) "Should pass"))
