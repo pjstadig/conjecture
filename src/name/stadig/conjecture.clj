@@ -701,33 +701,45 @@
 
 ;;; RUNNING TESTS: LOW-LEVEL FUNCTIONS
 
+(def ^:dynamic *once-fixtures* #{})
+(def ^:dynamic *each-fixtures* #{})
+
 (defn test-var
   "If v has a function in its :test metadata, calls that function,
   with *testing-vars* bound to (conj *testing-vars* v)."
   {:dynamic true, :added "1.1"}
   [v]
-  (when-let [t (:test (meta v))]
-    (binding [*testing-vars* (conj *testing-vars* v)]
-      (do-report {:type :begin-test-var, :var v})
-      (inc-report-counter :test)
-      (try (t)
-           (catch Throwable e
-             (do-report {:type :error,
-                         :message "Uncaught exception, not in assertion."
-                         :expected nil, :actual e})))
-      (do-report {:type :end-test-var, :var v}))))
+  (let [ns (:ns (meta v))]
+    (when-let [t (:test (meta v))]
+      (if (contains? *once-fixtures* ns)
+        (if (contains? *each-fixtures* ns)
+          (binding [*testing-vars* (conj *testing-vars* v)]
+            (do-report {:type :begin-test-var, :var v})
+            (inc-report-counter :test)
+            (try (t)
+                 (catch Throwable e
+                   (do-report {:type :error,
+                               :message "Uncaught exception, not in assertion."
+                               :expected nil, :actual e})))
+            (do-report {:type :end-test-var, :var v}))
+          (let [each-fixture-fn (join-fixtures (::each-fixtures (meta ns)))]
+            (binding [*each-fixtures* (conj *each-fixtures* ns)]
+              (each-fixture-fn (fn [] (test-var v))))))
+        (let [once-fixture-fn (join-fixtures (::once-fixtures (meta ns)))]
+          (binding [*once-fixtures* (conj *once-fixtures* ns)]
+            (once-fixture-fn (fn [] (test-var v)))))))))
 
 (defn test-all-vars
   "Calls test-var on every var interned in the namespace, with fixtures."
   {:added "1.1"}
   [ns]
-  (let [once-fixture-fn (join-fixtures (::once-fixtures (meta ns)))
-        each-fixture-fn (join-fixtures (::each-fixtures (meta ns)))]
-    (once-fixture-fn
-     (fn []
-       (doseq [v (vals (ns-interns ns))]
-         (when (:test (meta v))
-           (each-fixture-fn (fn [] (test-var v)))))))))
+  (if (contains? *once-fixtures* ns)
+    (doseq [v (vals (ns-interns ns))]
+      (when (:test (meta v))
+        (test-var v)))
+    (let [once-fixture-fn (join-fixtures (::once-fixtures (meta ns)))]
+      (binding [*once-fixtures* (conj *once-fixtures* ns)]
+        (once-fixture-fn (fn [] (test-all-vars ns)))))))
 
 (defn test-ns
   "If the namespace defines a function named test-ns-hook, calls that.
