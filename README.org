@@ -1,6 +1,7 @@
 #+STARTUP: hidestars showall
 * conjecture
-  A Clojure testing library forked from ~clojure.test~.
+  A ~clojure.test~ compatible third-party testing library for Clojure.  Please
+  contribute code and features through GitHub issues and pull requests.
 ** Usage
    Same as ~clojure.test~, except you pull in ~name.stadig.conjecture~.
 
@@ -33,7 +34,7 @@
 ** Known Issues
    - Any tools that depend directly on ~clojure.test~ will not be compatible,
      since the namespace is different for conjecture (for example,
-     clojure-mode).
+     clojure-test-mode will run the tests, but report incorrectly).
 ** Differences from clojure.test
    - Support for idempotent and singleton fixtures.
 ** License
