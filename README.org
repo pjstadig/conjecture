@@ -36,7 +36,7 @@
    You can see examples of all of this by looking at the project.clj for this
    project.
 ** Documentation
-   You will find documentation in the [[doc]] folder.
+   You will find documentation in the [[doc]] directory.
 
    Documentation contributions are welcomed.  You may use GitHub issues and pull
    requests to help with documentation.
