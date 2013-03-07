@@ -248,14 +248,14 @@
   ^{:doc "True by default.  If set to false, no test functions will
    be created by deftest, set-test, or with-test.  Use this to omit
    tests when compiling or loading production code."
-    :added "1.1"}
+    :added "0.1.0"}
   *load-tests* true)
 
 (def ^:dynamic
   ^{:doc "The maximum depth of stack traces to print when an Exception
   is thrown during a test.  Defaults to nil, which means print the
   complete stack trace."
-    :added "1.1"}
+    :added "0.1.0"}
   *stack-trace-depth* nil)
 
 
@@ -279,7 +279,7 @@
 
 (defmacro with-test-out
   "Runs body with *out* bound to the value of *test-out*."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [& body]
   `(binding [*out* *test-out*]
      ~@body))
@@ -292,7 +292,7 @@
 
   Deprecated in 1.2: The information needed for test reporting is
   now on :file and :line keys in the result map."
-  {:added "1.1"
+  {:added "0.1.0"
    :deprecated "1.2"}
   [n]
   (let [^StackTraceElement s (nth (.getStackTrace (new java.lang.Throwable)) n)]
@@ -302,7 +302,7 @@
   "Returns a string representation of the current test.  Renders names
   in *testing-vars* as a list, then the source file and line of
   current assertion."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [m]
   (let [{:keys [file line]} m]
     (str
@@ -314,14 +314,14 @@
 (defn testing-contexts-str
   "Returns a string representation of the current test context. Joins
   strings in *testing-contexts* with spaces."
-  {:added "1.1"}
+  {:added "0.1.0"}
   []
   (apply str (interpose " " (reverse *testing-contexts*))))
 
 (defn inc-report-counter
   "Increments the named counter in *report-counters*, a ref to a map.
   Does nothing if *report-counters* is nil."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [name]
   (when *report-counters*
     (dosync (commute *report-counters* assoc name
@@ -337,7 +337,7 @@
    the top of test_is.clj for more information on the types of
    arguments for 'report'."
     :dynamic true
-    :added "1.1"}
+    :added "0.1.0"}
   report :type)
 
 (defn- file-and-line
@@ -407,7 +407,7 @@
 
 (defn get-possibly-unbound-var
   "Like var-get but returns nil if the var is unbound."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [v]
   (try (var-get v)
        (catch IllegalStateException e
@@ -416,7 +416,7 @@
 (defn function?
   "Returns true if argument is a function or a symbol that resolves to
   a function (not a macro)."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [x]
   (if (symbol? x)
     (when-let [v (resolve x)]
@@ -431,7 +431,7 @@
   'actual' argument will contain the form with all its sub-forms
   evaluated.  If the predicate returns false, the 'actual' form will
   be wrapped in (not...)."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [msg form]
   (let [args (rest form)
         pred (first form)]
@@ -448,7 +448,7 @@
 (defn assert-any
   "Returns generic assertion code for any test, including macros, Java
   method calls, or isolated symbols."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [msg form]
   `(let [value# ~form]
      (if value#
@@ -533,7 +533,7 @@
 (defmacro try-expr
   "Used by the 'is' macro to catch unexpected exceptions.
   You don't call this."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [msg form]
   `(try ~(assert-expr msg form)
         (catch Throwable t#
@@ -560,7 +560,7 @@
   (is (thrown-with-msg? c re body)) checks that an instance of c is
   thrown AND that the message on the exception matches (with
   re-find) the regular expression re."
-  {:added "1.1"}
+  {:added "0.1.0"}
   ([form] `(is ~form nil))
   ([form msg] `(try-expr ~msg ~form)))
 
@@ -577,7 +577,7 @@
                (is (= 4 (* 2 2))))
 
   Note: This breaks some reporting features, such as line numbers."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [argv expr & args]
   (if (or
        ;; (are [] true) is meaningless but ok
@@ -593,7 +593,7 @@
 (defmacro testing
   "Adds a new string to the list of testing contexts.  May be nested,
   but must occur inside a test function (deftest)."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [string & body]
   `(binding [*testing-contexts* (conj *testing-contexts* ~string)]
      ~@body))
@@ -608,7 +608,7 @@
 
   When *load-tests* is false, only evaluates the definition, ignoring
   the tests."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [definition & body]
   (if *load-tests*
     `(doto ~definition (alter-meta! assoc :test (fn [] ~@body)))
@@ -626,7 +626,7 @@
   itself.
 
   When *load-tests* is false, deftest is ignored."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [name & body]
   (when *load-tests*
     `(def ~(vary-meta name assoc :test `(fn [] ~@body))
@@ -634,7 +634,7 @@
 
 (defmacro deftest-
   "Like deftest but creates a private var."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [name & body]
   (when *load-tests*
     `(def ~(vary-meta name assoc :test `(fn [] ~@body) :private true)
@@ -647,7 +647,7 @@
   The var must already exist.  Does not modify the value of the var.
 
   When *load-tests* is false, set-test is ignored."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [name & body]
   (when *load-tests*
     `(alter-meta! (var ~name) assoc :test (fn [] ~@body))))
@@ -659,7 +659,7 @@
 (defn- add-ns-meta
   "Adds elements in coll to the current namespace metadata as the
   value of key."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [key coll]
   (alter-meta! *ns* assoc key coll))
 
@@ -667,7 +667,7 @@
   "Wrap test runs in a fixture function to perform setup and
   teardown. Using a fixture-type of :each wraps every test
   individually, while:once wraps the whole run in a single function."
-  {:added "1.1"}
+  {:added "0.1.0"}
   (fn [fixture-type & args] fixture-type))
 
 (defmethod use-fixtures :each [fixture-type & args]
@@ -678,21 +678,21 @@
 
 (defn- default-fixture
   "The default, empty, fixture function.  Just calls its argument."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [f]
   (f))
 
 (defn compose-fixtures
   "Composes two fixture functions, creating a new fixture function
   that combines their behavior."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [f1 f2]
   (fn [g] (f1 (fn [] (f2 g)))))
 
 (defn join-fixtures
   "Composes a collection of fixtures, in order.  Always returns a valid
   fixture function, even if the collection is empty."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [fixtures]
   (reduce compose-fixtures default-fixture fixtures))
 
@@ -714,7 +714,7 @@
 (defn test-var
   "If v has a function in its :test metadata, calls that function,
   with *testing-vars* bound to (conj *testing-vars* v)."
-  {:dynamic true, :added "1.1"}
+  {:dynamic true, :added "0.1.0"}
   [v]
   (let [ns (:ns (meta v))]
     (when-let [t (:test (meta v))]
@@ -738,7 +738,7 @@
 
 (defn test-all-vars
   "Calls test-var on every var interned in the namespace, with fixtures."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [ns]
   (if (contains? *once-fixtures* ns)
     (doseq [v (vals (ns-interns ns))]
@@ -756,7 +756,7 @@
   Internally binds *report-counters* to a ref initialized to
   *inital-report-counters*.  Returns the final, dereferenced state of
   *report-counters*."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [ns]
   (binding [*report-counters* (ref *initial-report-counters*)]
     (let [ns-obj (the-ns ns)]
@@ -777,7 +777,7 @@
   "Runs all tests in the given namespaces; prints results.
   Defaults to current namespace if none given.  Returns a map
   summarizing test results."
-  {:added "1.1"}
+  {:added "0.1.0"}
   ([] (run-tests *ns*))
   ([& namespaces]
      (let [summary (assoc (apply merge-with + (map test-ns namespaces))
@@ -790,7 +790,7 @@
   Optional argument is a regular expression; only namespaces with
   names matching the regular expression (with re-matches) will be
   tested."
-  {:added "1.1"}
+  {:added "0.1.0"}
   ([] (apply run-tests (all-ns)))
   ([re] (apply run-tests (filter #(re-matches re (name (ns-name %)))
                                  (all-ns)))))
@@ -798,7 +798,7 @@
 (defn successful?
   "Returns true if the given test summary indicates all tests
   were successful, false otherwise."
-  {:added "1.1"}
+  {:added "0.1.0"}
   [summary]
   (and (zero? (:fail summary 0))
        (zero? (:error summary 0))))
@@ -808,6 +808,7 @@
 (defn idempotent-fixture
   "Takes a fixture and makes it into an idempotent fixture.  An idempotent
   fixture can be nested many times, but will be run only once."
+  {:added "0.1.0"}
   [fx]
   (fn [f]
     (let [run? (not (@has-run? fx))]
@@ -823,6 +824,7 @@
 (defn idempotent-generator
   "Takes a fixture generator and makes it into a fixture generator that
   generates idempotent fixtures."
+  {:added "0.1.0"}
   [generator]
   (fn [& args]
     (idempotent-fixture (apply generator args))))
@@ -832,6 +834,7 @@
 (defn singleton-fixture
   "Takes a fixture and makes it into a singleton fixture.  A singleton fixture
   is run only once per JVM process."
+  {:added "0.1.0"}
   [fx]
   (fn [f]
     (let [run? (not (@singleton-has-run? fx))]
