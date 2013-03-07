@@ -124,13 +124,13 @@
         called? (atom false)
         fx (fn [f] (swap! count inc) (f))
         ifx (idempotent-fixture fx)]
-    ((comp-fixtures ifx ifx ifx) #(do (is (@has-run? fx) "Should pass")
+    ((join-fixtures ifx ifx ifx) #(do (is (@has-run? fx) "Should pass")
                                       (reset! called? true)))
     (is (= 1 @count) "Should pass")
     (is (not (@has-run? fx)) "Should pass")
     (is @called? "Should pass")
     (try
-      ((comp-fixtures ifx ifx ifx) #(throw (Exception.)))
+      ((join-fixtures ifx ifx ifx) #(throw (Exception.)))
       (is false "Should fail")
       (catch Exception _))
     (is (not (@has-run? fx)) "Should pass")))
@@ -142,7 +142,7 @@
         called? (atom false)
         ifx (gen "hello")
         ifx2 (gen "goodbye")]
-    ((comp-fixtures ifx ifx ifx2) #(reset! called? true))
+    ((join-fixtures ifx ifx ifx2) #(reset! called? true))
     (is (= ["hello" "goodbye"] @order) "Should pass")
     (is @called? "Should pass")))
 
@@ -159,3 +159,20 @@
   (sfx #(constantly nil))
   (is (= 1 @sfx-count) "Should pass")
   (is (@singleton-has-run? fx) "Should pass"))
+
+(deftest test-join-fixtures
+  (let [fixtures (atom [])
+        fx1 (fn [f] (swap! fixtures conj :fx1) (f))
+        fx2 (fn [f] (swap! fixtures conj :fx2) (f))
+        noop (fn [])]
+    ((join-fixtures fx1) noop)
+    (is (= [:fx1] @fixtures) "Should pass")
+    (reset! fixtures [])
+    ((join-fixtures [fx1]) noop)
+    (is (= [:fx1] @fixtures) "Should pass")
+    (reset! fixtures [])
+    ((join-fixtures fx1 fx2) noop)
+    (is (= [:fx1 :fx2] @fixtures) "Should pass")
+    (reset! fixtures [])
+    ((join-fixtures [fx1 fx2]) noop)
+    (is (= [:fx1 :fx2] @fixtures) "Should pass")))

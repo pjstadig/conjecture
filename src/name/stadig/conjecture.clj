@@ -693,8 +693,12 @@
   "Composes a collection of fixtures, in order.  Always returns a valid
   fixture function, even if the collection is empty."
   {:added "0.1.0"}
-  [fixtures]
-  (reduce compose-fixtures default-fixture fixtures))
+  ([fixture-or-fixtures]
+     (if-not (or (nil? fixture-or-fixtures) (coll? fixture-or-fixtures))
+       (join-fixtures [fixture-or-fixtures])
+       (reduce compose-fixtures default-fixture fixture-or-fixtures)))
+  ([fixture & fixtures]
+     (join-fixtures (cons fixture fixtures))))
 
 
 
@@ -843,6 +847,3 @@
           (do (swap! singleton-has-run? conj fx)
               (fx f))
           (f))))))
-
-(defn comp-fixtures [& fixtures]
-  (join-fixtures fixtures))
