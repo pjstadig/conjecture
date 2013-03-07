@@ -37,6 +37,7 @@
      clojure-test-mode will run the tests, but report incorrectly).
 ** Differences from clojure.test
    - Support for idempotent and singleton fixtures.
+   - Fixtures are run when you call a single test as a function.
 ** License
    : Copyright © Rich Hickey and Paul Stadig. All rights reserved.
    :
