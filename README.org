@@ -35,6 +35,13 @@
 
    You can see examples of all of this by looking at the project.clj for this
    project.
+** Documentation
+   You will find documentation in the doc folder.  The following topics are
+   covered:
+   - [[doc/Fixtures.org][Fixtures]]
+
+   Documentation contributions are welcomed.  You may use GitHub issues and pull
+   requests to help with documentation.
 ** Known Issues
    - Any tools that depend directly on ~clojure.test~ will not be compatible,
      since the namespace is different for conjecture (for example,
