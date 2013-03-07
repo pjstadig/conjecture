@@ -7,7 +7,7 @@
 
    For example, you would add the following dependency to your project.clj:
 
-   : :dependencies [[name.stadig/conjecture "0.2.0-SNAPSHOT"]]
+   : :dependencies [[name.stadig/conjecture "0.2.0"]]
 
    Use ~name.stadig.conjecture~ in your tests:
 

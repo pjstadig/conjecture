@@ -1,5 +1,5 @@
-(defproject name.stadig/conjecture "0.2.0-SNAPSHOT"
-  :description "A ~clojure.test~ compatible third-party testing library for
+(defproject name.stadig/conjecture "0.2.0"
+  :description "A clojure.test compatible third-party testing library for
   Clojure."
   :url "http://github.com/pjstadig/conjecture"
   :license {:name "Eclipse Public License - v 1.0"
