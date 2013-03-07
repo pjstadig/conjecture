@@ -7,7 +7,7 @@
 
    For example, you would add the following dependency to your project.clj:
 
-   : :dependencies [[name.stadig/conjecture "0.1.0"]]
+   : :dependencies [[name.stadig/conjecture "0.2.0-SNAPSHOT"]]
 
    Use ~name.stadig.conjecture~ in your tests:
 
@@ -41,7 +41,9 @@
      clojure-test-mode will run the tests, but report incorrectly).
 ** Differences from clojure.test
    - Support for idempotent and singleton fixtures.
-   - Fixtures are run when you call a single test as a function.
+   - Runs fixtures when you call a function as a test (e.g. at a REPL)
+
+   See CHANGELOG.org for more details.
 ** License
    : Copyright © Rich Hickey and Paul Stadig. All rights reserved.
    :
