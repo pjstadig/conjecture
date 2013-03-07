@@ -2,6 +2,6 @@
 * conjecture changelog
 ** 0.1.0
    - Initial fork of clojure.test
-   - Adds idempotent fixtures and singleton fixtures
+   - Adds support for creating idempotent and singleton fixtures.
 ** 0.2.0
    - Runs fixtures when you call a function as a test (e.g. at a REPL)
