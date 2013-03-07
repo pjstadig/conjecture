@@ -146,20 +146,6 @@
     (is (= ["hello" "goodbye"] @order) "Should pass")
     (is @called? "Should pass")))
 
-(def sfx-count (atom 0))
-(def fx (fn [f] (swap! sfx-count inc) (f)))
-(def sfx (singleton-fixture fx))
-
-(deftest test-singleton-fixture
-  (reset! sfx-count 0)
-  (swap! singleton-has-run? disj sfx)
-  (sfx #(constantly nil))
-  (is (= 1 @sfx-count) "Should pass")
-  (is (@singleton-has-run? fx) "Should pass")
-  (sfx #(constantly nil))
-  (is (= 1 @sfx-count) "Should pass")
-  (is (@singleton-has-run? fx) "Should pass"))
-
 (deftest test-join-fixtures
   (let [fixtures (atom [])
         fx1 (fn [f] (swap! fixtures conj :fx1) (f))

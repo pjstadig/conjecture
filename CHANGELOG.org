@@ -5,3 +5,6 @@
    - Adds support for creating idempotent and singleton fixtures.
 ** 0.2.0
    - Runs fixtures when you call a function as a test (e.g. at a REPL)
+   - Removes support for singleton fixtures.  They did not provide an
+     opportunity to clean up, and it would be better to have some kind of
+     once-for-the-test-run fixture that did allow for cleanup.

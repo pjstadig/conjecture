@@ -40,7 +40,7 @@
      since the namespace is different for conjecture (for example,
      clojure-test-mode will run the tests, but report incorrectly).
 ** Differences from clojure.test
-   - Adds support for creating idempotent and singleton fixtures.
+   - Adds support for creating idempotent fixtures.
    - Runs fixtures when you call a function as a test (e.g. at a REPL)
 
    See CHANGELOG.org for more details.
