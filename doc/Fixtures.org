@@ -1,0 +1,104 @@
+#+STARTUP: hidestars showall
+* Fixtures
+  Fixtures are "setup" code used to prepare a test environment.  They are used
+  to put the database into a known state, launch external services that may be
+  require, etc.
+
+  There are two types of fixtures: once fixtures and each fixtures.  Once
+  fixtures are run once for an entire test namespace.  Each fixtures are run
+  once for each deftest form.
+
+  Fixtures are a function that takes a function.  This function is a thunk of
+  the rest of the fixture chain and whatever test will be executed.
+
+  As an example, assume you have the following in your test namespace:
+
+  : (defn once-fixture [f]
+  :   (println "starting once")
+  :   (f)
+  :   (println "finishing once"))
+  :
+  : (defn each-fixture [f]
+  :   (println "starting each")
+  :   (f)
+  :   (println "finishing each"))
+  :
+  : (use-fixtures :once once-fixture)
+  :
+  : (use-fixtures :each each-fixture)
+  :
+  : (detest test-frobnication
+  :   (frobnicate)
+  :   (is (frobnicated?)))
+
+  When ~test-frobnicate~ is run:
+  1. ~once-fixture~ is called with a thunk.  When this thunk is called it will
+     call ~each-fixture~ with another thunk.
+  2. ~each-fixture~ is called with a thunk.  When this thunk is called it will
+     execute the body of ~test-frobnication~.
+
+  The test code is nested within the fixture functions which are nested within
+  each other.  A fixture function has an opportunity to run code before, after,
+  or around the thunk it is passed.
+
+  The above test execution will have the following output:
+
+  : starting once
+  : starting each
+  : [TEST OUTPUT]
+  : finishing each
+  : finishing once
+** Idempotent fixtures
+   It is sometimes useful to compose fixtures together to create more
+   coarse-grained fixtures.  This could create a situation where a single
+   fixture appears more than once in a fixture chain.
+
+   To ensure that a fixture runs only once even if it appears more than once in
+   a fixture chain, you can wrap it with ~idempotent-fixture~
+
+   : (def a-useful-fixture
+   :   (idempotent-fixture
+   :     (fn [f]
+   :       (println "starting useful fixture")
+   :       (f)
+   :       (println "finishing useful fixture"))))
+   :
+   : (defn another-useful-fixture [f]
+   :   (println "starting another useful fixture")
+   :   (f)
+   :   (println "finishing another useful fixture"))
+   :
+   : (def a-useful-composition (comp a-useful-fixture another-useful-fixture))
+   :
+   : (use-fixtures :once a-useful-fixture)
+   :
+   : (use-fixtures :each a-useful-composition)
+   :
+   : (detest test-frobnication
+   :   (frobnicate)
+   :   (is (frobnicated?)))
+
+   When ~test-frobnicate~ runs, it will run ~a-useful-fixture~ only once, even
+   though it appears in the fixture chain more than once.
+** Fixture best practices
+   - *Anonymous fixtures* If you define anonymous fixtures it is recommended
+     that you give the anonymous function a name.  For example:
+
+     : (use-fixtures :once (fn my-fixture [f]
+     :                       (do-something)
+     :                       (f)))
+
+     This eases debugging.
+   - *Around fixtures* If you are defining an around fixture, it is recommended
+     that you use a try/finally block.  For example:
+
+     : (defn my-fixture [f]
+     :   (set-us-up-the-thing)
+     :   (try
+     :     (f)
+     :     (finally
+     :       (clean-us-up-the-thing))))
+
+     This way your clean up function will be run regardless of whether an
+     exception occurs during the test run.  This is especially important for any
+     external services and databases that need to be reset after a test run.
