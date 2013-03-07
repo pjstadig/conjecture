@@ -701,7 +701,14 @@
 
 ;;; RUNNING TESTS: LOW-LEVEL FUNCTIONS
 
+(defn once-fixture-fn [ns]
+  (join-fixtures (::once-fixtures (meta ns))))
+
+(defn each-fixture-fn [ns]
+  (join-fixtures (::each-fixtures (meta ns))))
+
 (def ^:dynamic *once-fixtures* #{})
+
 (def ^:dynamic *each-fixtures* #{})
 
 (defn test-var
@@ -722,12 +729,12 @@
                                :message "Uncaught exception, not in assertion."
                                :expected nil, :actual e})))
             (do-report {:type :end-test-var, :var v}))
-          (let [each-fixture-fn (join-fixtures (::each-fixtures (meta ns)))]
+          (let [fixtures (each-fixture-fn ns)]
             (binding [*each-fixtures* (conj *each-fixtures* ns)]
-              (each-fixture-fn (fn [] (test-var v))))))
-        (let [once-fixture-fn (join-fixtures (::once-fixtures (meta ns)))]
+              (fixtures (fn [] (test-var v))))))
+        (let [fixtures (once-fixture-fn ns)]
           (binding [*once-fixtures* (conj *once-fixtures* ns)]
-            (once-fixture-fn (fn [] (test-var v)))))))))
+            (fixtures (fn [] (test-var v)))))))))
 
 (defn test-all-vars
   "Calls test-var on every var interned in the namespace, with fixtures."
@@ -737,9 +744,9 @@
     (doseq [v (vals (ns-interns ns))]
       (when (:test (meta v))
         (test-var v)))
-    (let [once-fixture-fn (join-fixtures (::once-fixtures (meta ns)))]
+    (let [fixtures (once-fixture-fn ns)]
       (binding [*once-fixtures* (conj *once-fixtures* ns)]
-        (once-fixture-fn (fn [] (test-all-vars ns)))))))
+        (fixtures (fn [] (test-all-vars ns)))))))
 
 (defn test-ns
   "If the namespace defines a function named test-ns-hook, calls that.
