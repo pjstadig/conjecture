@@ -11,12 +11,14 @@
 
    Use ~name.stadig.conjecture~ in your tests:
 
-   : (ns foo.bar.test
-   :   (:use [name.stadig.conjecture]))
-   :
-   : (deftest test-widget
-   :   (is (= foo bar))
-   :   ...)
+   #+BEGIN_SRC clojure
+     (ns foo.bar.test
+       (:use [name.stadig.conjecture]))
+
+     (deftest test-widget
+       (is (= foo bar))
+       ...)
+   #+END_SRC
 
    Conjecture is compatible with any ~clojure.test~ based tests you may have.
    You simply swap ~name.stadig.conjecture~ in for ~clojure.test~.
