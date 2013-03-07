@@ -6,9 +6,11 @@
    Same as ~clojure.test~, except you pull in ~name.stadig.conjecture~.
 
    For example, you would add the following dependency to your project.clj:
+
    : :dependencies [[name.stadig/conjecture "0.1.0"]]
 
    Use ~name.stadig.conjecture~ in your tests:
+
    : (ns foo.bar.test
    :   (:use [name.stadig.conjecture]))
    :
@@ -21,10 +23,12 @@
 
    You can add the lein-conjecture plugin to your project.clj, if that's your
    style:
+
    : :plugins [[name.stadig/lein-conjecture "0.1.0"]]
 
    With this plugin you can run your tests with ~lein conjecture~, or if your
    muscle memory is too overwhelming, you can add an alias to your project.clj:
+
    : :aliases {"test" "conjecture"}
 
    Now you can run your tests with ~lein test~.
