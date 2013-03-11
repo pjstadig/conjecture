@@ -34,17 +34,17 @@
   (is nil "Should fail"))
 
 (deftest can-test-=
-  (is (= 2 (+ 1 1)) "Should pass")
-  (is (= 3 (+ 2 2)) "Should fail"))
+  (is (= "foobar" (str "foo" "bar")) "Should pass")
+  (is (= "notfoobar" (str "foo" "bar")) "Should fail"))
 
 (deftest can-test-instance
-  (is (instance? Long (+ 2 2)) "Should pass")
-  (is (instance? Float (+ 1 1)) "Should fail"))
+  (is (instance? String (str "foo" "bar")) "Should pass")
+  (is (instance? Float (str "foo" "bar")) "Should fail"))
 
 (deftest can-test-thrown
   (is (thrown? ArithmeticException (/ 1 0)) "Should pass")
   ;; No exception is thrown:
-  (is (thrown? Exception (+ 1 1)) "Should fail")
+  (is (thrown? Exception (str "foo" "bar")) "Should fail")
   ;; Wrong class of exception is thrown:
   (is (thrown? ArithmeticException (throw (RuntimeException.))) "Should error"))
 
@@ -55,7 +55,8 @@
   (is (thrown-with-msg? ArithmeticException #"Something else" (/ 1 0))
       "Should fail")
   ;; No exception is thrown:
-  (is (thrown? Exception (+ 1 1)) "Should fail")
+  (is (thrown-with-msg? Exception #"Not an Exception"
+        (str "foo" "bar")) "Should fail")
   ;; Wrong class of exception is thrown:
   (is (thrown-with-msg? IllegalArgumentException #"Divide by zero" (/ 1 0))
       "Should error"))
