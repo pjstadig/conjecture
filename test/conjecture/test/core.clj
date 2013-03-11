@@ -17,8 +17,8 @@
 ;; Thanks to Chas Emerick, Allen Rohner, and Stuart Halloway for
 ;; contributions and suggestions.
 
-(ns name.stadig.test.conjecture
-  (:use name.stadig.conjecture))
+(ns conjecture.test.core
+  (:use conjecture.core))
 
 (deftest can-test-symbol
   (let [x true]
@@ -118,7 +118,7 @@
 (defn test-ns-hook []
   (binding [original-report report
             report custom-report]
-    (test-all-vars (find-ns 'name.stadig.test.conjecture))))
+    (test-all-vars (find-ns 'conjecture.test.core))))
 
 (deftest test-idempotent-fixture
   (let [count (atom 0)
