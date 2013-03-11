@@ -234,7 +234,7 @@
 
    For additional event types, see the examples in the code.
 "}
-  name.stadig.conjecture
+  conjecture.core
   (:require [clojure.template :as temp]
             [clojure.stacktrace :as stack]))
 
