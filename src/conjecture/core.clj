@@ -350,7 +350,7 @@
   "Add file and line information to a test result and call report.
    If you are writing a custom assert-expr method, call this function
    to pass test results to report."
-  {:added "1.2"}
+  {:added "0.1.0"}
   [m]
   (report
    (case
@@ -685,7 +685,11 @@
     (require 'conjecture.singleton-fixtures)
     (catch FileNotFoundException _)))
 
-(defn use-singleton-fixtures [& args]
+(defn use-singleton-fixtures
+  "Wrap the entire test run in a fixture function to perform setup and
+  teardown."
+  {:added "0.4.0"}
+  [& args]
   (when-not (= (ns-name *ns*) 'conjecture.singleton-fixtures)
     (throw (Exception. (str "Singletons fixtures may only be defined in the "
                             "conjecture.singleton-fixtures namespace"))))
