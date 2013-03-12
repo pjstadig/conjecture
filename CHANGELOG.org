@@ -1,5 +1,9 @@
 #+STARTUP: hidestars showall
 * conjecture changelog
+** 0.3.0
+   - Compatible with Clojure 1.2.1.
+   - Renamed groupId to conjecture.
+   - Renamed namespaces from name.stadig.* => conjecture
 ** 0.2.0
    - Runs fixtures when you call a function as a test (e.g. at a REPL)
    - Removes support for singleton fixtures.  They did not provide an

@@ -1,9 +1,9 @@
-(defproject name.stadig/conjecture "0.2.0"
+(defproject conjecture "0.3.0"
   :description "A clojure.test compatible third-party testing library for
   Clojure."
   :url "http://github.com/pjstadig/conjecture"
   :license {:name "Eclipse Public License - v 1.0"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.5.0"]]
-  :plugins [[name.stadig/lein-conjecture "0.1.0"]]
+  :dependencies [[org.clojure/clojure "1.2.1"]]
+  :plugins [[lein-conjecture "0.2.0"]]
   :aliases {"test" "conjecture"})

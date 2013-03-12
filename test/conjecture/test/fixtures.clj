@@ -14,12 +14,15 @@
 ;; by Stuart Sierra
 ;; March 28, 2009
 
-(ns name.stadig.test.conjecture.fixtures
-  (:use name.stadig.conjecture))
+(ns conjecture.test.fixtures
+  (:use conjecture.core))
 
-(declare ^:dynamic *a* ^:dynamic *b* ^:dynamic *c* ^:dynamic *d*)
+(declare ^{:dynamic true} *a*
+         ^{:dynamic true} *b*
+         ^{:dynamic true} *c*
+         ^{:dynamic true} *d*)
 
-(def ^:dynamic *n* 0)
+(def ^{:dynamic true} *n* 0)
 
 (defn fixture-a [f]
   (binding [*a* 3] (f)))

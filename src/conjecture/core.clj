@@ -234,7 +234,7 @@
 
    For additional event types, see the examples in the code.
 "}
-  name.stadig.conjecture
+  conjecture.core
   (:require [clojure.template :as temp]
             [clojure.stacktrace :as stack]))
 
@@ -244,14 +244,14 @@
 
 ;;; USER-MODIFIABLE GLOBALS
 
-(defonce ^:dynamic
+(defonce ^{:dynamic true}
   ^{:doc "True by default.  If set to false, no test functions will
    be created by deftest, set-test, or with-test.  Use this to omit
    tests when compiling or loading production code."
     :added "0.1.0"}
   *load-tests* true)
 
-(def ^:dynamic
+(def ^{:dynamic true}
   ^{:doc "The maximum depth of stack traces to print when an Exception
   is thrown during a test.  Defaults to nil, which means print the
   complete stack trace."
@@ -262,20 +262,20 @@
 ;;; GLOBALS USED BY THE REPORTING FUNCTIONS
 
 ;; bound to a ref of a map in test-ns
-(def ^:dynamic *report-counters* nil)
+(def ^{:dynamic true} *report-counters* nil)
 
 ;; used to initialize *report-counters*
-(def ^:dynamic *initial-report-counters*
+(def ^{:dynamic true} *initial-report-counters*
   {:test 0, :pass 0, :fail 0, :error 0})
 
 ;; bound to hierarchy of vars being tested
-(def ^:dynamic *testing-vars* (list))
+(def ^{:dynamic true} *testing-vars* (list))
 
 ;; bound to hierarchy of "testing" strings
-(def ^:dynamic *testing-contexts* (list))
+(def ^{:dynamic true} *testing-contexts* (list))
 
 ;; ; bound to hierarchy of "testing" strings
-(def ^:dynamic *test-out* *out*)
+(def ^{:dynamic true} *test-out* *out*)
 
 (defmacro with-test-out
   "Runs body with *out* bound to the value of *test-out*."
@@ -711,9 +711,9 @@
 (defn each-fixture-fn [ns]
   (join-fixtures (::each-fixtures (meta ns))))
 
-(def ^:dynamic *once-fixtures* #{})
+(def ^{:dynamic true} *once-fixtures* #{})
 
-(def ^:dynamic *each-fixtures* #{})
+(def ^{:dynamic true} *each-fixtures* #{})
 
 (defn test-var
   "If v has a function in its :test metadata, calls that function,

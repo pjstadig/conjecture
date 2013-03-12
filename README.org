@@ -3,23 +3,23 @@
   A ~clojure.test~ compatible third-party testing library for Clojure.  Please
   contribute code and features through GitHub issues and pull requests.
 ** Usage
-   Same as ~clojure.test~, except you pull in ~name.stadig.conjecture~.
+   Same as ~clojure.test~, except you pull in ~conjecture.core~.
 
    For example, you would add the following dependency to your project.clj:
 
    : :dependencies [[name.stadig/conjecture "0.2.0"]]
 
-   Use ~name.stadig.conjecture~ in your tests:
+   Use ~conjecture.core~ in your tests:
 
    : (ns foo.bar.test
-   :   (:use [name.stadig.conjecture]))
+   :   (:use [conjecture.core]))
    :
    : (deftest test-widget
    :   (is (= foo bar))
    :   ...)
 
    Conjecture is compatible with any ~clojure.test~ based tests you may have.
-   You simply swap ~name.stadig.conjecture~ in for ~clojure.test~.
+   You simply swap ~conjecture.core~ in for ~clojure.test~.
 
    You can add the lein-conjecture plugin to your project.clj, if that's your
    style:
