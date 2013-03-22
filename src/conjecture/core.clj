@@ -236,7 +236,8 @@
 "}
   conjecture.core
   (:require [clojure.template :as temp]
-            [clojure.stacktrace :as stack]))
+            [clojure.stacktrace :as stack])
+  (:import (java.io FileNotFoundException)))
 
 ;; Nothing is marked "private" here, so you can rebind things to plug
 ;; in your own testing or reporting frameworks.
@@ -349,7 +350,7 @@
   "Add file and line information to a test result and call report.
    If you are writing a custom assert-expr method, call this function
    to pass test results to report."
-  {:added "1.2"}
+  {:added "0.1.0"}
   [m]
   (report
    (case
@@ -676,6 +677,24 @@
 (defmethod use-fixtures :once [fixture-type & args]
   (add-ns-meta ::once-fixtures args))
 
+(defonce singleton-fixtures (atom []))
+(def ^:dynamic *singletons-run?* false)
+
+(defn load-singletons! []
+  (try
+    (require 'conjecture.singleton-fixtures)
+    (catch FileNotFoundException _)))
+
+(defn use-singleton-fixtures
+  "Wrap the entire test run in a fixture function to perform setup and
+  teardown."
+  {:added "0.4.0"}
+  [& args]
+  (when-not (= (ns-name *ns*) 'conjecture.singleton-fixtures)
+    (throw (Exception. (str "Singletons fixtures may only be defined in the "
+                            "conjecture.singleton-fixtures namespace"))))
+  (reset! singleton-fixtures args))
+
 (defn- default-fixture
   "The default, empty, fixture function.  Just calls its argument."
   {:added "0.1.0"}
@@ -705,6 +724,9 @@
 
 ;;; RUNNING TESTS: LOW-LEVEL FUNCTIONS
 
+(defn singleton-fixture-fn []
+  (join-fixtures @singleton-fixtures))
+
 (defn once-fixture-fn [ns]
   (join-fixtures (::once-fixtures (meta ns))))
 
@@ -715,6 +737,31 @@
 
 (def ^{:dynamic true} *each-fixtures* #{})
 
+(defmacro with-singleton-fixtures [& body]
+  `(let [f# (fn [] ~@body)]
+     (load-singletons!)
+     (if *singletons-run?*
+       (f#)
+       (let [fixtures# (singleton-fixture-fn)]
+         (binding [*singletons-run?* true]
+           (fixtures# f#))))))
+
+(defmacro with-once-fixtures [ns & body]
+  `(let [f# (fn [] ~@body)]
+     (if (contains? *once-fixtures* ~ns)
+       (f#)
+       (let [fixtures# (once-fixture-fn ~ns)]
+         (binding [*once-fixtures* (conj *once-fixtures* ~ns)]
+           (fixtures# f#))))))
+
+(defmacro with-each-fixtures [ns & body]
+  `(let [f# (fn [] ~@body)]
+     (if (contains? *each-fixtures* ~ns)
+       (f#)
+       (let [fixtures# (each-fixture-fn ~ns)]
+         (binding [*each-fixtures* (conj *each-fixtures* ~ns)]
+           (fixtures# f#))))))
+
 (defn test-var
   "If v has a function in its :test metadata, calls that function,
   with *testing-vars* bound to (conj *testing-vars* v)."
@@ -722,35 +769,29 @@
   [v]
   (let [ns (:ns (meta v))]
     (when-let [t (:test (meta v))]
-      (if (contains? *once-fixtures* ns)
-        (if (contains? *each-fixtures* ns)
-          (binding [*testing-vars* (conj *testing-vars* v)]
-            (do-report {:type :begin-test-var, :var v})
-            (inc-report-counter :test)
-            (try (t)
-                 (catch Throwable e
-                   (do-report {:type :error,
-                               :message "Uncaught exception, not in assertion."
-                               :expected nil, :actual e})))
-            (do-report {:type :end-test-var, :var v}))
-          (let [fixtures (each-fixture-fn ns)]
-            (binding [*each-fixtures* (conj *each-fixtures* ns)]
-              (fixtures (fn [] (test-var v))))))
-        (let [fixtures (once-fixture-fn ns)]
-          (binding [*once-fixtures* (conj *once-fixtures* ns)]
-            (fixtures (fn [] (test-var v)))))))))
+      (with-singleton-fixtures
+        (with-once-fixtures ns
+          (with-each-fixtures ns
+            (binding [*testing-vars* (conj *testing-vars* v)]
+              (do-report {:type :begin-test-var, :var v})
+              (inc-report-counter :test)
+              (try
+                (t)
+                (catch Throwable e
+                  (do-report {:type :error,
+                              :message "Uncaught exception, not in assertion."
+                              :expected nil, :actual e})))
+              (do-report {:type :end-test-var, :var v}))))))))
 
 (defn test-all-vars
   "Calls test-var on every var interned in the namespace, with fixtures."
   {:added "0.1.0"}
   [ns]
-  (if (contains? *once-fixtures* ns)
-    (doseq [v (vals (ns-interns ns))]
-      (when (:test (meta v))
-        (test-var v)))
-    (let [fixtures (once-fixture-fn ns)]
-      (binding [*once-fixtures* (conj *once-fixtures* ns)]
-        (fixtures (fn [] (test-all-vars ns)))))))
+  (with-singleton-fixtures
+    (with-once-fixtures ns
+      (doseq [v (vals (ns-interns ns))]
+        (when (:test (meta v))
+          (test-var v))))))
 
 (defn test-ns
   "If the namespace defines a function named test-ns-hook, calls that.
@@ -784,10 +825,11 @@
   {:added "0.1.0"}
   ([] (run-tests *ns*))
   ([& namespaces]
-     (let [summary (assoc (apply merge-with + (map test-ns namespaces))
-                     :type :summary)]
-       (do-report summary)
-       summary)))
+     (with-singleton-fixtures
+       (let [summary (assoc (apply merge-with + (map test-ns namespaces))
+                       :type :summary)]
+         (do-report summary)
+         summary))))
 
 (defn run-all-tests
   "Runs all tests in all namespaces; prints results.

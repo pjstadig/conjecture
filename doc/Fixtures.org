@@ -80,6 +80,31 @@
 
    When ~test-frobnicate~ runs, it will run ~a-useful-fixture~ only once, even
    though it appears in the fixture chain more than once.
+** Singleton fixtures
+   At times one may want to have a fixture run around the entire test run, for
+   example, to run some external service for the duration of the test run
+   instead of having a once fixture that starts and stops the service for each
+   namespace.  This is called 'singleton' fixture.
+
+   To register a singleton fixture, you need to create a
+   ~conjecture/singleton_fixtures.clj~ file in your project's test
+   classpath.  This file should define the ~conjecture.singleton-fixtures~
+   namespace and register singleton fixtures like this:
+
+   : (ns conjecture.singleton-fixtures
+   :   (:use conjecture.core))
+   :
+   : (defn run-the-service [f]
+   :   (start-the-service)
+   :   (try
+   :     (f)
+   :     (finally
+   :       (stop-the-service))))
+   :
+   : (use-singleton-fixtures run-the-service)
+
+   Now anytime that ~conjecture.core/run-tests~ is called, the ~run-the-service~
+   fixture will be run around the entire test run.
 ** Fixture best practices
    - *Anonymous fixtures* If you define anonymous fixtures it is recommended
      that you give the anonymous function a name.  For example:
