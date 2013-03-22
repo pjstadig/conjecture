@@ -1,4 +1,4 @@
-(defproject conjecture "0.3.0"
+(defproject conjecture "0.4.0"
   :description "A clojure.test compatible third-party testing library for
   Clojure."
   :url "http://github.com/pjstadig/conjecture"

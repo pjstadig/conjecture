@@ -1,5 +1,7 @@
 #+STARTUP: hidestars showall
 * conjecture changelog
+** 0.4.0
+   - Adds singleton fixtures.
 ** 0.3.0
    - Compatible with Clojure 1.2.1.
    - Renamed groupId to conjecture.
